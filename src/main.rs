@@ -1,10 +1,5 @@
 use actix_web::{get, web, App, HttpServer, Responder};
 
-#[get("/hello/{name}")]
-async fn greet(name: web::Path<String>) -> impl Responder {
-  format!("Hello {name}!")
-}
-
 #[get("/status")]
 async fn get_status() -> impl Responder {
   format!("Ok")
@@ -16,7 +11,6 @@ async fn main() -> std::io::Result<()> {
   HttpServer::new(|| {
     App::new()
       .route("/hello", web::get().to(|| async { "Hello World!" }))
-      .service(greet)
       .service(get_status)
   })
   .bind(("127.0.0.1", 8080))?
