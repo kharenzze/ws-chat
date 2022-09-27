@@ -5,6 +5,11 @@
 	"scripts": {
 		"dev": "parcel watch src/index.html"
 	},
+	"targets": {
+		"source": {
+			"publicUrl": "/app/"
+		}
+	},
 	"devDependencies": {
 		"parcel": "^2.7.0"
 	}
