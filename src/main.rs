@@ -6,6 +6,9 @@ use actix_web::{
 use actix_web_actors::ws;
 use std::path::PathBuf;
 
+const DEBUG_STATIC: bool = false;
+const DEBUG_WS_TREAM: bool = false;
+
 #[get("/status")]
 async fn get_status() -> impl Responder {
   format!("Ok")
@@ -15,7 +18,9 @@ async fn get_status() -> impl Responder {
 async fn static_content(req: HttpRequest) -> ActixResult<NamedFile> {
   let filename: String = req.match_info().query("filename").parse().unwrap();
   let path = PathBuf::from(format!("./static/{filename}"));
-  println!("{}", path.to_str().unwrap());
+  if DEBUG_STATIC {
+    println!("{}", path.to_str().unwrap());
+  }
   Ok(NamedFile::open(path)?)
 }
 
@@ -40,7 +45,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
 
 async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
   let resp = ws::start(MyWs {}, &req, stream);
-  println!("{:?}", resp);
+  if DEBUG_WS_TREAM {
+		println!("{:?}", resp);
+  }
   resp
 }
 
