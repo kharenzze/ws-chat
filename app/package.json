@@ -1,9 +1,11 @@
 {
-  "name": "app",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "devDependencies": {
-    "parcel": "^2.7.0"
-  }
+	"name": "app",
+	"version": "1.0.0",
+	"license": "MIT",
+	"scripts": {
+		"dev": "parcel watch src/index.html"
+	},
+	"devDependencies": {
+		"parcel": "^2.7.0"
+	}
 }
