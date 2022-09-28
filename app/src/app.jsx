@@ -1,5 +1,10 @@
+import { Chat } from "./components/Chat"
+
 export const App = () => {
 	return (
-		<p>Hola!</p>
+		<div>
+			<p>Hola!</p>
+			<Chat />
+		</div>
 	)
 }
