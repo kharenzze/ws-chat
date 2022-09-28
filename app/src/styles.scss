@@ -1,0 +1,33 @@
+.chat {
+	label {
+		margin-right: 8px;;
+	}
+	.chat-box {
+		background-color: lightgray;
+		min-height: 300px;
+		width: 100%;
+		border-radius: 8px;
+		margin: 20px 0;
+	}
+}
+
+.app {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	flex-direction: row;
+
+	div {
+		box-sizing: border-box;
+		flex: 1;
+		padding: 8px;
+	}
+}
+
+.row {
+	flex: 1;
+	flex-direction: row;
+}
