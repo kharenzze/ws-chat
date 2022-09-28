@@ -10,7 +10,13 @@
 			"publicUrl": "/app/"
 		}
 	},
+	"alias": {
+		"preact/jsx-dev-runtime": "preact/jsx-runtime"
+	},
 	"devDependencies": {
 		"parcel": "^2.7.0"
+	},
+	"dependencies": {
+		"preact": "^10.11.0"
 	}
 }
