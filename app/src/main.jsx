@@ -7,8 +7,7 @@ const wsUrl = new URL('/ws/', window.location.origin.replace('http', 'ws'))
 
 const ws = new WebSocket(wsUrl)
 
-
-ws.addEventListener('open', (evt) => {
+ws.addEventListener('open', (_evt) => {
 	let count = 1
 	const msg = "Msg no " + count
 	console.log(`Sent ${count}`)
