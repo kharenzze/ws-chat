@@ -1,7 +1,10 @@
 import { useReducer } from 'preact/hooks'
 
 const defState = {
-	messages: [],
+	messages: [
+		`I'm a message`,
+		`I'm another message`,
+	],
 	input: ""
 }
 
@@ -52,6 +55,9 @@ export const Chat = () => {
 			text
 		})
 	}
+	const messageElements = state.messages.map((m) => {
+		return <p>{m}</p>
+	})
 	return (
 		<div className="chat">
 			<div className="row">
@@ -59,7 +65,7 @@ export const Chat = () => {
 				<input />
 			</div>
 			<div className="chat-box">
-				I'm a message
+				{messageElements}
 			</div>
 			<div className="row">
 				<input onKeyPress={onInputPress} onInput={onChangeInput} value={state.input} />
