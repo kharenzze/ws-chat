@@ -1,4 +1,4 @@
-import { useReducer } from 'preact/hooks'
+import { useReducer, useMemo, useEffect } from 'preact/hooks'
 
 const defState = {
 	messages: [
@@ -9,14 +9,19 @@ const defState = {
 }
 
 const Actions = {
-	ChangeInput: 'change-input'
+	ChangeInput: 'change-input',
+	ReceiveMessage: 'receive-message'
 }
 
 const handlers = {
 	[Actions.ChangeInput]: (state, action) => {
 		state.input = action.text
 		return state
-	}
+	},
+	[Actions.ReceiveMessage]: (state, action) => {
+		state.messages.push(action.message)
+		return state
+	},
 }
 
 const reducer = (state, action) => {
@@ -29,8 +34,32 @@ const reducer = (state, action) => {
 	return state
 }
 
+const wsUrl = new URL('/ws/', window.location.origin.replace('http', 'ws'))
+const useWebsocket = (dispatch) => {
+	const ws = useMemo(() => new WebSocket(wsUrl))
+	useEffect(() => {
+		ws.addEventListener('open', (_evt) => {
+			let count = 1
+			const msg = "Msg no " + count
+			console.log(`Sent ${count}`)
+			ws.send(msg)
+			count++
+		})
+		ws.addEventListener('message', (evt) => {
+			dispatch({
+				type: Actions.ReceiveMessage,
+				message: evt.data
+			})
+		})
+	}, [ws])
+	return {
+		ws
+	}
+}
+
 export const Chat = () => {
 	const [state, dispatch] = useReducer(reducer, defState);
+	useWebsocket(dispatch)
 	const sendMessage = () => {
 		const message = state.input
 		if (!message) {
