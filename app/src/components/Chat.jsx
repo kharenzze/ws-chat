@@ -1,10 +1,8 @@
 import { useReducer, useMemo, useEffect } from 'preact/hooks'
+import { Message } from './Message'
 
 const defState = {
-	messages: [
-		`I'm a message`,
-		`I'm another message`,
-	],
+	messages: [],
 	input: ""
 }
 
@@ -39,13 +37,15 @@ const useWebsocket = (dispatch, position) => {
 	const ws = useMemo(() => new WebSocket(wsUrl), [])
 	useEffect(() => {
 		ws.addEventListener('open', (_evt) => {
-			const msg = "Msg from " + position
-			ws.send(msg)
+			const msg = {
+				text: "I'm  " + position,
+			}
+			ws.send(JSON.stringify(msg))
 		})
 		ws.addEventListener('message', (evt) => {
 			dispatch({
 				type: Actions.ReceiveMessage,
-				message: evt.data
+				message: JSON.parse(evt.data)
 			})
 		})
 	}, [ws])
@@ -55,7 +55,6 @@ const useWebsocket = (dispatch, position) => {
 }
 
 export const Chat = ({ position }) => {
-	console.log(position)
 	const [state, dispatch] = useReducer(reducer, defState);
 	useWebsocket(dispatch, position)
 	const sendMessage = () => {
@@ -82,8 +81,8 @@ export const Chat = ({ position }) => {
 			text
 		})
 	}
-	const messageElements = state.messages.map((m) => {
-		return <p>{m}</p>
+	const messageElements = state.messages.map((m, i) => {
+		return <Message message={m} key={i} />
 	})
 	return (
 		<div className="chat">
