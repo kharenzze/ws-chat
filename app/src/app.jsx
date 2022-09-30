@@ -4,10 +4,10 @@ export const App = () => {
 	return (
 		<div className="app">
 			<div>
-				<Chat position="left" />
+				<Chat username="left" />
 			</div>
 			<div>
-				<Chat position="right" />
+				<Chat username="right" />
 			</div>
 		</div>
 	)

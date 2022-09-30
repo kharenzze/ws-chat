@@ -33,12 +33,12 @@ const reducer = (state, action) => {
 }
 
 const wsUrl = new URL('/ws/', window.location.origin.replace('http', 'ws'))
-const useWebsocket = (dispatch, position) => {
+const useWebsocket = (dispatch, username) => {
 	const ws = useMemo(() => new WebSocket(wsUrl), [])
 	useEffect(() => {
 		ws.addEventListener('open', (_evt) => {
 			const msg = {
-				text: "I'm  " + position,
+				text: "I'm  " + username,
 			}
 			ws.send(JSON.stringify(msg))
 		})
@@ -54,9 +54,9 @@ const useWebsocket = (dispatch, position) => {
 	}
 }
 
-export const Chat = ({ position }) => {
+export const Chat = ({ username }) => {
 	const [state, dispatch] = useReducer(reducer, defState);
-	const { ws } = useWebsocket(dispatch, position)
+	const { ws } = useWebsocket(dispatch, username)
 	const sendMessage = () => {
 		const message = state.input
 		if (!message) {
