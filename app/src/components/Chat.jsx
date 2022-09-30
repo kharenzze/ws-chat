@@ -56,14 +56,17 @@ const useWebsocket = (dispatch, position) => {
 
 export const Chat = ({ position }) => {
 	const [state, dispatch] = useReducer(reducer, defState);
-	useWebsocket(dispatch, position)
+	const { ws } = useWebsocket(dispatch, position)
 	const sendMessage = () => {
 		const message = state.input
 		if (!message) {
 			console.log('Empty message')
 			return
 		}
-		//todo send
+		const data = {
+			text: state.input,
+		}
+		ws.send(JSON.stringify(data))
 		dispatch({
 			type: Actions.ChangeInput,
 			text: ''
