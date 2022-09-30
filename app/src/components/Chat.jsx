@@ -35,15 +35,12 @@ const reducer = (state, action) => {
 }
 
 const wsUrl = new URL('/ws/', window.location.origin.replace('http', 'ws'))
-const useWebsocket = (dispatch) => {
-	const ws = useMemo(() => new WebSocket(wsUrl))
+const useWebsocket = (dispatch, position) => {
+	const ws = useMemo(() => new WebSocket(wsUrl), [])
 	useEffect(() => {
 		ws.addEventListener('open', (_evt) => {
-			let count = 1
-			const msg = "Msg no " + count
-			console.log(`Sent ${count}`)
+			const msg = "Msg from " + position
 			ws.send(msg)
-			count++
 		})
 		ws.addEventListener('message', (evt) => {
 			dispatch({
@@ -57,9 +54,10 @@ const useWebsocket = (dispatch) => {
 	}
 }
 
-export const Chat = () => {
+export const Chat = ({ position }) => {
+	console.log(position)
 	const [state, dispatch] = useReducer(reducer, defState);
-	useWebsocket(dispatch)
+	useWebsocket(dispatch, position)
 	const sendMessage = () => {
 		const message = state.input
 		if (!message) {
