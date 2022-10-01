@@ -1,9 +1,14 @@
+extern crate chrono;
+
 use actix::{Actor, StreamHandler};
 use actix_files::NamedFile;
 use actix_web::{
   get, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder, Result as ActixResult,
 };
 use actix_web_actors::ws;
+use chrono::prelude::*;
+use chrono::serde::ts_milliseconds;
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 const DEBUG_STATIC: bool = false;
@@ -36,7 +41,12 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
   fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
     match msg {
       Ok(ws::Message::Ping(msg)) => ctx.pong(&msg),
-      Ok(ws::Message::Text(text)) => ctx.text(text),
+      Ok(ws::Message::Text(text)) => {
+        let mut msg: AppMessage = serde_json::from_str(&text).unwrap();
+        msg.timestamp = Utc::now();
+        let json = serde_json::to_string(&msg).unwrap();
+        ctx.text(json)
+      }
       Ok(ws::Message::Binary(bin)) => ctx.binary(bin),
       _ => (),
     }
@@ -46,9 +56,16 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
 async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
   let resp = ws::start(MyWs {}, &req, stream);
   if DEBUG_WS_TREAM {
-		println!("{:?}", resp);
+    println!("{:?}", resp);
   }
   resp
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+struct AppMessage {
+  text: String,
+  #[serde(with = "ts_milliseconds", default)]
+  timestamp: DateTime<Utc>,
 }
 
 #[actix_web::main]
