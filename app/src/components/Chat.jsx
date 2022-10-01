@@ -2,106 +2,107 @@ import { useReducer, useMemo, useEffect } from 'preact/hooks'
 import { Message } from './Message'
 
 const defState = {
-	messages: [],
-	input: ""
+  messages: [],
+  input: ""
 }
 
 const Actions = {
-	ChangeInput: 'change-input',
-	ReceiveMessage: 'receive-message'
+  ChangeInput: 'change-input',
+  ReceiveMessage: 'receive-message'
 }
 
 const handlers = {
-	[Actions.ChangeInput]: (state, action) => {
-		state.input = action.text
-		return state
-	},
-	[Actions.ReceiveMessage]: (state, action) => {
-		state.messages.push(action.message)
-		return state
-	},
+  [Actions.ChangeInput]: (state, action) => {
+    state.input = action.text
+    return state
+  },
+  [Actions.ReceiveMessage]: (state, action) => {
+    state.messages.push(action.message)
+    return state
+  },
 }
 
 const reducer = (state, action) => {
-	const handler = handlers[action.type]
-	if (handler) {
-		state = {
-			...handler(state, action)
-		}
-	}
-	return state
+  const handler = handlers[action.type]
+  if (handler) {
+    state = {
+      ...handler(state, action)
+    }
+  }
+  return state
 }
 
 const wsUrl = new URL('/ws/', window.location.origin.replace('http', 'ws'))
 const useWebsocket = (dispatch, username) => {
-	const ws = useMemo(() => new WebSocket(wsUrl), [])
-	useEffect(() => {
-		ws.addEventListener('open', (_evt) => {
-			const msg = {
-				text: "I'm  " + username,
-			}
-			ws.send(JSON.stringify(msg))
-		})
-		ws.addEventListener('message', (evt) => {
-			dispatch({
-				type: Actions.ReceiveMessage,
-				message: JSON.parse(evt.data)
-			})
-		})
-	}, [ws])
-	return {
-		ws
-	}
+  const ws = useMemo(() => new WebSocket(wsUrl), [])
+  useEffect(() => {
+    ws.addEventListener('open', (_evt) => {
+      const msg = {
+        text: "I'm  " + username,
+      }
+      ws.send(JSON.stringify(msg))
+    })
+    ws.addEventListener('message', (evt) => {
+      dispatch({
+        type: Actions.ReceiveMessage,
+        message: JSON.parse(evt.data)
+      })
+    })
+  }, [ws])
+  return {
+    ws
+  }
 }
 
 export const Chat = ({ username }) => {
-	const [state, dispatch] = useReducer(reducer, defState);
-	const { ws } = useWebsocket(dispatch, username)
-	const sendMessage = () => {
-		const message = state.input
-		if (!message) {
-			console.log('Empty message')
-			return
-		}
-		const data = {
-			text: state.input,
-		}
-		ws.send(JSON.stringify(data))
-		dispatch({
-			type: Actions.ChangeInput,
-			text: ''
-		})
-	}
-	const onInputPress = (evt) => {
-		if (evt.charCode === 13) {
-			sendMessage()
-		}
-	}
-	const onChangeInput = (evt) => {
-		const text = evt.target.value
-		dispatch({
-			type: Actions.ChangeInput,
-			text
-		})
-	}
-	const messageElements = state.messages.map((m, i) => {
-		return <Message message={m} key={i} />
-	})
-	return (
-		<div className="chat">
-			<div className="row">
-				<label>Room</label>
-				<input />
-			</div>
-			<div className="chat-box">
-				{messageElements}
-			</div>
-			<div className="row">
-				<input onKeyPress={onInputPress} onInput={onChangeInput} value={state.input} />
-				<button onClick={sendMessage}>
-					Send
-				</button>
-			</div>
-		</div>
-	)
+  const [state, dispatch] = useReducer(reducer, defState);
+  const { ws } = useWebsocket(dispatch, username)
+  const sendMessage = () => {
+    const message = state.input
+    if (!message) {
+      console.log('Empty message')
+      return
+    }
+    const data = {
+      text: state.input,
+    }
+    ws.send(JSON.stringify(data))
+    dispatch({
+      type: Actions.ChangeInput,
+      text: ''
+    })
+  }
+  const onInputPress = (evt) => {
+    if (evt.charCode === 13) {
+      sendMessage()
+    }
+  }
+  const onChangeInput = (evt) => {
+    const text = evt.target.value
+    dispatch({
+      type: Actions.ChangeInput,
+      text
+    })
+  }
+  const messageElements = state.messages.map((m, i) => {
+    console.log(m)
+    return <Message message={m} key={i} />
+  })
+  return (
+    <div className="chat">
+      <div className="row">
+        <label>Room</label>
+        <input />
+      </div>
+      <div className="chat-box">
+        {messageElements}
+      </div>
+      <div className="row">
+        <input onKeyPress={onInputPress} onInput={onChangeInput} value={state.input} />
+        <button onClick={sendMessage}>
+          Send
+        </button>
+      </div>
+    </div>
+  )
 }
