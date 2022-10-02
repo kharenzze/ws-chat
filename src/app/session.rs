@@ -1,13 +1,26 @@
 use crate::app::message::AppMessage;
-use actix::{Actor, StreamHandler};
+use crate::app::server::{Connect, WsServer};
+use actix::prelude::*;
 use actix_web_actors::ws;
 use chrono::prelude::*;
 
-pub struct WsSession;
+pub struct WsSession {
+  pub addr: Addr<WsServer>,
+}
 
 /// Define HTTP actor
 impl Actor for WsSession {
   type Context = ws::WebsocketContext<Self>;
+
+  fn started(&mut self, _ctx: &mut Self::Context) {
+    println!("session actor started");
+    self
+      .addr
+      .send(Connect {})
+      .into_actor(self)
+      .then(|_res, _act, _ctx| fut::ready(()))
+      .wait(_ctx);
+  }
 }
 
 /// Handler for ws::Message message

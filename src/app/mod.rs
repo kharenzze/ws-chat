@@ -1,6 +1,6 @@
 pub mod message;
 pub mod server;
-pub mod ws;
+pub mod session;
 
 pub use server::WsServer;
-pub use ws::WsSession;
+pub use session::WsSession;

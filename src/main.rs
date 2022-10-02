@@ -1,8 +1,9 @@
 extern crate chrono;
 mod app;
 
-use crate::app::WsSession;
+use crate::app::{WsServer, WsSession};
 
+use actix::prelude::*;
 use actix_files::NamedFile;
 use actix_web::{
   get, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder, Result as ActixResult,
@@ -28,8 +29,19 @@ async fn static_content(req: HttpRequest) -> ActixResult<NamedFile> {
   Ok(NamedFile::open(path)?)
 }
 
-async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
-  let resp = ws::start(WsSession {}, &req, stream);
+async fn index(
+  req: HttpRequest,
+  stream: web::Payload,
+  svr: web::Data<Addr<WsServer>>,
+) -> Result<HttpResponse, Error> {
+  println!("connetion");
+  let resp = ws::start(
+    WsSession {
+      addr: svr.get_ref().clone(),
+    },
+    &req,
+    stream,
+  );
   if DEBUG_WS_TREAM {
     println!("{:?}", resp);
   }
@@ -39,8 +51,10 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
   println!("Server listening in port 8080");
-  HttpServer::new(|| {
+  let server = WsServer::new().start();
+  HttpServer::new(move || {
     App::new()
+      .app_data(web::Data::new(server.clone()))
       .route("/ws/", web::get().to(index))
       .service(get_status)
       .service(static_content)
