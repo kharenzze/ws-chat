@@ -1,10 +1,10 @@
 import { useReducer, useMemo, useEffect } from 'preact/hooks'
 import { Message } from './Message'
 
-const defState = {
+const getBaseState = () => ({
   messages: [],
   input: ""
-}
+})
 
 const Actions = {
   ChangeInput: 'change-input',
@@ -43,7 +43,7 @@ const useWebsocket = (dispatch, username) => {
           username,
         }
         ws.send(JSON.stringify(msg))
-      }, Math.random() * 1000);
+      }, Math.random() * 200);
     })
     ws.addEventListener('message', (evt) => {
       dispatch({
@@ -58,7 +58,7 @@ const useWebsocket = (dispatch, username) => {
 }
 
 export const Chat = ({ username }) => {
-  const [state, dispatch] = useReducer(reducer, defState);
+  const [state, dispatch] = useReducer(reducer, getBaseState());
   const { ws } = useWebsocket(dispatch, username)
   const sendMessage = () => {
     const message = state.input
