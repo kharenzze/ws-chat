@@ -8,3 +8,21 @@ pub struct AppMessage {
   #[serde(with = "ts_milliseconds", default)]
   pub timestamp: DateTime<Utc>,
 }
+
+#[cfg(test)]
+mod tests {
+  use super::AppMessage;
+  #[test]
+  fn deserialize_json() {
+    let str = r#"
+    {
+      "text": "hello",
+      "timestamp": 1664668800000
+    }
+    "#;
+
+    let msg: AppMessage = serde_json::from_str(str).unwrap();
+    assert_eq!(&msg.text, "hello");
+    assert_eq!(&msg.timestamp.timestamp_millis(), &1664668800000);
+  }
+}
