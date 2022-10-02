@@ -1,7 +1,7 @@
 extern crate chrono;
 mod app;
 
-use crate::app::ws::AppWs;
+use crate::app::WsSession;
 
 use actix_files::NamedFile;
 use actix_web::{
@@ -29,7 +29,7 @@ async fn static_content(req: HttpRequest) -> ActixResult<NamedFile> {
 }
 
 async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
-  let resp = ws::start(AppWs {}, &req, stream);
+  let resp = ws::start(WsSession {}, &req, stream);
   if DEBUG_WS_TREAM {
     println!("{:?}", resp);
   }

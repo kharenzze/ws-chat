@@ -3,15 +3,15 @@ use actix::{Actor, StreamHandler};
 use actix_web_actors::ws;
 use chrono::prelude::*;
 
-pub struct AppWs;
+pub struct WsSession;
 
 /// Define HTTP actor
-impl Actor for AppWs {
+impl Actor for WsSession {
   type Context = ws::WebsocketContext<Self>;
 }
 
 /// Handler for ws::Message message
-impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for AppWs {
+impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsSession {
   fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
     match msg {
       Ok(ws::Message::Ping(msg)) => ctx.pong(&msg),
