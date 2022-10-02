@@ -1,5 +1,7 @@
 extern crate chrono;
+mod app;
 
+use crate::app::message::AppMessage;
 use actix::{Actor, StreamHandler};
 use actix_files::NamedFile;
 use actix_web::{
@@ -7,8 +9,6 @@ use actix_web::{
 };
 use actix_web_actors::ws;
 use chrono::prelude::*;
-use chrono::serde::ts_milliseconds;
-use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 const DEBUG_STATIC: bool = false;
@@ -59,13 +59,6 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     println!("{:?}", resp);
   }
   resp
-}
-
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-struct AppMessage {
-  text: String,
-  #[serde(with = "ts_milliseconds", default)]
-  timestamp: DateTime<Utc>,
 }
 
 #[actix_web::main]
