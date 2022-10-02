@@ -7,6 +7,7 @@ pub struct AppMessage {
   pub text: String,
   #[serde(with = "ts_milliseconds", default)]
   pub timestamp: DateTime<Utc>,
+  pub username: String,
 }
 
 #[cfg(test)]
