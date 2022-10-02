@@ -37,10 +37,13 @@ const useWebsocket = (dispatch, username) => {
   const ws = useMemo(() => new WebSocket(wsUrl), [])
   useEffect(() => {
     ws.addEventListener('open', (_evt) => {
-      const msg = {
-        text: "I'm  " + username,
-      }
-      ws.send(JSON.stringify(msg))
+      setTimeout(() => {
+        const msg = {
+          text: "I'm  " + username,
+          username,
+        }
+        ws.send(JSON.stringify(msg))
+      }, Math.random() * 1000);
     })
     ws.addEventListener('message', (evt) => {
       dispatch({
@@ -65,6 +68,7 @@ export const Chat = ({ username }) => {
     }
     const data = {
       text: state.input,
+      username
     }
     ws.send(JSON.stringify(data))
     dispatch({
@@ -85,7 +89,6 @@ export const Chat = ({ username }) => {
     })
   }
   const messageElements = state.messages.map((m, i) => {
-    console.log(m)
     return <Message message={m} key={i} />
   })
   return (
